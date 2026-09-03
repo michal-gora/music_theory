@@ -6,8 +6,8 @@
 import { createButtonGroup } from './button-group.js';
 
 const DEFAULT_TYPES = [
-  { value: 'scale', label: 'Scales' },
-  { value: 'chord', label: 'Chords' },
+    { value: 'chord', label: 'Chords' },
+    { value: 'scale', label: 'Scales' },
 ];
 
 /**

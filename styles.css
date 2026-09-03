@@ -134,15 +134,19 @@ main {
   font-weight: 700;
 }
 
-/* --- Octave transpose control --- */
+/* --- Stepper controls (octave transpose, keyboard range) --- */
+/* Both octave-transpose.js and range-control.js render this same
+   "◀ label ▶" shape via stepper.js, so they share one set of rules. */
 
-.octave-transpose {
+.octave-transpose,
+.range-control {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.octave-btn {
+.octave-btn,
+.range-btn {
   background: #33353f;
   color: var(--text);
   border: 1px solid #3f414c;
@@ -153,17 +157,20 @@ main {
   transition: background 0.15s, border-color 0.15s;
 }
 
-.octave-btn:hover:not(:disabled) {
+.octave-btn:hover:not(:disabled),
+.range-btn:hover:not(:disabled) {
   border-color: var(--accent-2);
 }
 
-.octave-btn:disabled {
+.octave-btn:disabled,
+.range-btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
 
-.octave-label {
-  min-width: 76px;
+.octave-label,
+.range-label {
+  min-width: 84px;
   text-align: center;
   font-weight: 700;
   color: var(--accent-2);

@@ -1,49 +1,53 @@
 /**
  * chords-page.js
  * Page-specific wiring: keyboard + key selector + mode selector +
- * inversion selector + octave transpose -> highlight the triad in the
- * chosen inversion, with the root note circle-marked wherever it ends
- * up in the voicing.
+ * inversion selector + octave transpose + range control -> highlight
+ * the triad in the chosen inversion, with the root note circle-marked
+ * wherever it ends up in the voicing.
  *
- * IMPORTANT: the keyboard window is fixed (never resized/scrolled) and
- * shared with the scales page via keyboard-config.js (see
- * KEYBOARD_START_MIDI / KEYBOARD_END_MIDI there for the exact bounds).
- * Only the chord's underlying base octave changes when you transpose -
- * that's what actually makes the chord visibly move to different keys.
- * (An earlier version shifted the window by the same amount as the
- * chord, which cancelled out visually - a full octave shift looks
- * identical on a periodic keyboard.)
+ * Centering is delegated entirely to music-theory.js's
+ * getCenteredChordVoicing(), which picks whichever base octave keeps
+ * the voiced chord closest to the middle of the current window - this
+ * naturally keeps 1st/2nd inversions centered too, not just root
+ * position (a fixed base octave only centers root position correctly).
+ * Octave transpose is then a simple +/-12 semitone shift applied on
+ * top of that centered voicing.
  */
 import { PianoKeyboard } from './keyboard.js';
 import { createKeySelector } from './key-selector.js';
 import { createModeSelector } from './mode-selector.js';
 import { createInversionSelector } from './inversion-selector.js';
 import { createOctaveTranspose } from './octave-transpose.js';
-import { getStandardKeyboardOptions } from './keyboard-config.js';
+import { createRangeControl } from './range-control.js';
 import {
-  getTriadMidiNotes,
-  invertChord,
+  computeKeyboardWindow,
+  getStandardKeyboardOptions,
+  DEFAULT_OCTAVE_SPAN,
+  MIN_OCTAVE_SPAN,
+  MAX_OCTAVE_SPAN,
+} from './keyboard-config.js';
+import {
+  getCenteredChordVoicing,
   findRootNoteInVoicing,
   NOTE_NAMES_SHARP,
 } from './music-theory.js';
 
-const BASE_CHORD_OCTAVE = 4;
-
+let octaveSpan = DEFAULT_OCTAVE_SPAN;
 let octaveOffset = 0;
 
 const keyboard = new PianoKeyboard(
   document.getElementById('keyboard-container'),
-  getStandardKeyboardOptions()
+  getStandardKeyboardOptions(octaveSpan)
 );
 
 function update() {
   const pc = keySelector.getSelected();
   const mode = modeSelector.getSelected();
   const inversion = inversionSelector.getSelected();
-  const chordOctave = BASE_CHORD_OCTAVE + octaveOffset;
+  const { startMidi, endMidi } = computeKeyboardWindow(octaveSpan);
 
-  const rootPositionTriad = getTriadMidiNotes(pc, mode, chordOctave);
-  const voicedTriad = invertChord(rootPositionTriad, inversion);
+  const centeredVoicing = getCenteredChordVoicing(pc, mode, inversion, startMidi, endMidi);
+  const voicedTriad = centeredVoicing.map((n) => n + octaveOffset * 12);
   const rootNote = findRootNoteInVoicing(voicedTriad, pc);
 
   keyboard.setNotes({
@@ -70,6 +74,17 @@ const inversionSelector = createInversionSelector(document.getElementById('inver
 const octaveTranspose = createOctaveTranspose(document.getElementById('octave-transpose-container'), {
   onChange: (offset) => {
     octaveOffset = offset;
+    update();
+  },
+});
+createRangeControl(document.getElementById('range-control-container'), {
+  min: MIN_OCTAVE_SPAN,
+  max: MAX_OCTAVE_SPAN,
+  initial: DEFAULT_OCTAVE_SPAN,
+  onChange: (span) => {
+    octaveSpan = span;
+    const { startMidi, endMidi } = computeKeyboardWindow(octaveSpan);
+    keyboard.setRange(startMidi, endMidi);
     update();
   },
 });

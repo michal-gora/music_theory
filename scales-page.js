@@ -1,26 +1,23 @@
 /**
  * scales-page.js
  * Page-specific wiring: keyboard + key selector + mode selector +
- * octave transpose -> highlight every occurrence of the scale's notes
- * across the (fixed) visible keyboard window.
- *
- * The keyboard window is fixed and shared with the chords page via
- * keyboard-config.js, so both pages always show the same range/width
- * without duplicating those numbers.
- *
- * Because this page already highlights the scale in every octave at
- * once, that highlight pattern is inherently "transpose-invariant" -
- * shifting a fully periodic pattern by exactly one octave looks
- * identical. So instead, transposing here moves the single root
- * marker to a different octave's occurrence of the root note, which
- * is a real, visible effect and still matches "transpose by an
- * octave" conceptually (it shows you the same note, an octave over).
+ * octave transpose + range control -> highlight every occurrence of the
+ * scale's notes across the currently visible keyboard window, with a
+ * single root marker on whichever occurrence falls closest to the
+ * window's center (or the transposed target, if transposed).
  */
 import { PianoKeyboard } from './keyboard.js';
 import { createKeySelector } from './key-selector.js';
 import { createModeSelector } from './mode-selector.js';
 import { createOctaveTranspose } from './octave-transpose.js';
-import { KEYBOARD_START_MIDI, KEYBOARD_END_MIDI, getStandardKeyboardOptions } from './keyboard-config.js';
+import { createRangeControl } from './range-control.js';
+import {
+  computeKeyboardWindow,
+  getStandardKeyboardOptions,
+  DEFAULT_OCTAVE_SPAN,
+  MIN_OCTAVE_SPAN,
+  MAX_OCTAVE_SPAN,
+} from './keyboard-config.js';
 import {
   getScalePitchClasses,
   getNotesInRangeMatchingPitchClasses,
@@ -28,30 +25,25 @@ import {
   NOTE_NAMES_SHARP,
 } from './music-theory.js';
 
-const CENTER_MIDI = (KEYBOARD_START_MIDI + KEYBOARD_END_MIDI) / 2;
-
+let octaveSpan = DEFAULT_OCTAVE_SPAN;
 let octaveOffset = 0;
 
 const keyboard = new PianoKeyboard(
   document.getElementById('keyboard-container'),
-  getStandardKeyboardOptions()
+  getStandardKeyboardOptions(octaveSpan)
 );
 
 function update() {
   const pc = keySelector.getSelected();
   const mode = modeSelector.getSelected();
+  const { startMidi, endMidi } = computeKeyboardWindow(octaveSpan);
 
   const scalePitchClasses = getScalePitchClasses(pc, mode);
-  const scaleNotes = getNotesInRangeMatchingPitchClasses(scalePitchClasses, KEYBOARD_START_MIDI, KEYBOARD_END_MIDI);
+  const scaleNotes = getNotesInRangeMatchingPitchClasses(scalePitchClasses, startMidi, endMidi);
 
-  // Aim the marker at "the usual center, shifted by however many
-  // octaves we've transposed" - clamped so it can't aim outside the
-  // visible window entirely.
-  const targetMidi = Math.min(
-    KEYBOARD_END_MIDI,
-    Math.max(KEYBOARD_START_MIDI, CENTER_MIDI + octaveOffset * 12)
-  );
-  const markerRoot = findNoteNearestTarget(pc, targetMidi, KEYBOARD_START_MIDI, KEYBOARD_END_MIDI);
+  const center = (startMidi + endMidi) / 2;
+  const targetMidi = Math.min(endMidi, Math.max(startMidi, center + octaveOffset * 12));
+  const markerRoot = findNoteNearestTarget(pc, targetMidi, startMidi, endMidi);
 
   keyboard.setNotes({
     highlighted: scaleNotes,
@@ -73,6 +65,17 @@ const modeSelector = createModeSelector(document.getElementById('mode-selector-c
 const octaveTranspose = createOctaveTranspose(document.getElementById('octave-transpose-container'), {
   onChange: (offset) => {
     octaveOffset = offset;
+    update();
+  },
+});
+createRangeControl(document.getElementById('range-control-container'), {
+  min: MIN_OCTAVE_SPAN,
+  max: MAX_OCTAVE_SPAN,
+  initial: DEFAULT_OCTAVE_SPAN,
+  onChange: (span) => {
+    octaveSpan = span;
+    const { startMidi, endMidi } = computeKeyboardWindow(octaveSpan);
+    keyboard.setRange(startMidi, endMidi);
     update();
   },
 });

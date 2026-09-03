@@ -153,6 +153,26 @@ export function findRootNoteInVoicing(midiNotes, rootPitchClass) {
   return midiNotes.find((n) => pitchClass(n) === rootPitchClass);
 }
 
+export function getCenteredChordVoicing(rootPitchClass, chordType, inversion, startMidi, endMidi) {
+  const target = (startMidi + endMidi) / 2;
+  const minOctave = midiToOctave(startMidi) - 1;
+  const maxOctave = midiToOctave(endMidi) + 1;
+
+  let best = null;
+  let bestDist = Infinity;
+  for (let octave = minOctave; octave <= maxOctave; octave++) {
+    const rootPosition = getTriadMidiNotes(rootPitchClass, chordType, octave);
+    const voiced = invertChord(rootPosition, inversion);
+    const midpoint = (voiced[0] + voiced[voiced.length - 1]) / 2;
+    const dist = Math.abs(midpoint - target);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = voiced;
+    }
+  }
+  return best;
+}
+
 /**
  * Fold a list of MIDI notes into a single display octave, e.g. for
  * showing a scale confined to one visual octave regardless of the

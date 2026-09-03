@@ -7,16 +7,14 @@
  * music theory rules live here, just quiz bookkeeping.
  */
 import {
-  getScalePitchClasses,
-  getNotesInRangeMatchingPitchClasses,
+  getScalePitchClasses, 
+  getNotesInRangeMatchingPitchClasses, 
   findNoteNearestCenter,
-  getTriadMidiNotes,
-  invertChord,
-  findRootNoteInVoicing,
-  NOTE_NAMES_SHARP,
+  getCenteredChordVoicing, 
+  findRootNoteInVoicing, 
+  NOTE_NAMES_SHARP, 
   MODE_LABELS,
 } from './music-theory.js';
-import { KEYBOARD_START_MIDI, KEYBOARD_END_MIDI } from './keyboard-config.js';
 
 const ALL_PITCH_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const NATURAL_PITCH_CLASSES = [0, 2, 4, 5, 7, 9, 11]; // C D E F G A B (no sharps/flats)
@@ -116,16 +114,14 @@ export function checkAnswer(question, guess) {
  * Returns { highlighted, rootNote } - callers decide whether/when to
  * actually reveal `rootNote` as a marker (e.g. only after answering).
  */
-export function getQuestionDisplayNotes(question) {
+export function getQuestionDisplayNotes(question, startMidi, endMidi) {
   if (question.type === 'scale') {
     const pitchClasses = getScalePitchClasses(question.rootPc, question.mode);
-    const highlighted = getNotesInRangeMatchingPitchClasses(pitchClasses, KEYBOARD_START_MIDI, KEYBOARD_END_MIDI);
-    const rootNote = findNoteNearestCenter(question.rootPc, KEYBOARD_START_MIDI, KEYBOARD_END_MIDI);
+    const highlighted = getNotesInRangeMatchingPitchClasses(pitchClasses, startMidi, endMidi);
+    const rootNote = findNoteNearestCenter(question.rootPc, startMidi, endMidi);
     return { highlighted, rootNote };
   }
-
-  const rootPositionTriad = getTriadMidiNotes(question.rootPc, question.mode, CHORD_BASE_OCTAVE);
-  const voiced = invertChord(rootPositionTriad, question.inversion);
+  const voiced = getCenteredChordVoicing(question.rootPc, question.mode, question.inversion, startMidi, endMidi);
   const rootNote = findRootNoteInVoicing(voiced, question.rootPc);
   return { highlighted: voiced, rootNote };
 }
