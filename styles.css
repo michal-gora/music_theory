@@ -5,6 +5,8 @@
   --muted: #9aa0ac;
   --accent: #5ec6ff;
   --accent-2: #ff9f5a;
+  --good: #4caf82;
+  --bad: #ff5a5f;
   --white-key: #f7f7f5;
   --white-key-stroke: #2a2a2a;
   --black-key: #1c1c1c;
@@ -73,6 +75,10 @@ main {
   flex: 1 1 220px;
 }
 
+.controls-group-wide {
+  flex: 2 1 320px;
+}
+
 .controls-group h3 {
   margin: 0 0 8px 0;
   font-size: 0.85rem;
@@ -81,9 +87,14 @@ main {
   color: var(--muted);
 }
 
+/* All "pick one of N" button rows share the same layout and button
+   look, whether they're picking a key, a mode, an inversion, a quiz
+   type, or a difficulty preset. */
 .key-selector,
 .mode-selector,
-.inversion-selector {
+.inversion-selector,
+.quiz-type-toggle,
+.difficulty-selector {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -91,7 +102,9 @@ main {
 
 .key-btn,
 .mode-btn,
-.inversion-btn {
+.inversion-btn,
+.quiz-type-btn,
+.difficulty-btn {
   background: #33353f;
   color: var(--text);
   border: 1px solid #3f414c;
@@ -104,13 +117,17 @@ main {
 
 .key-btn:hover,
 .mode-btn:hover,
-.inversion-btn:hover {
+.inversion-btn:hover,
+.quiz-type-btn:hover,
+.difficulty-btn:hover {
   border-color: var(--accent);
 }
 
 .key-btn.active,
 .mode-btn.active,
-.inversion-btn.active {
+.inversion-btn.active,
+.quiz-type-btn.active,
+.difficulty-btn.active {
   background: var(--accent);
   color: #10131a;
   border-color: var(--accent);
@@ -223,6 +240,89 @@ main {
 
 .marker-root {
   fill: var(--marker-root);
+}
+
+/* --- Quiz page --- */
+
+.quiz-instructions {
+  color: var(--muted);
+  margin-top: 0;
+}
+
+.score-tracker {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+
+.score-correct { color: var(--good); }
+.score-wrong { color: var(--bad); }
+.score-accuracy { color: var(--muted); font-weight: 600; font-size: 0.85rem; }
+
+.feedback-message {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #33353f;
+  color: var(--text);
+  min-height: 1.2em;
+}
+
+.feedback-message.feedback-correct {
+  background: rgba(76, 175, 130, 0.15);
+  color: var(--good);
+  font-weight: 700;
+}
+
+.feedback-message.feedback-wrong {
+  background: rgba(255, 90, 95, 0.15);
+  color: var(--bad);
+  font-weight: 700;
+}
+
+.quiz-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.primary-btn,
+.secondary-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.primary-btn {
+  background: var(--accent);
+  color: #10131a;
+}
+
+/* Same button, swapped to this style once it becomes "Next Question"
+   after an answer has been submitted - a visual cue that its role
+   changed without needing a second, separately-positioned button. */
+.primary-btn.is-next {
+  background: var(--accent-2);
+}
+
+.secondary-btn {
+  background: var(--accent-2);
+  color: #10131a;
+}
+
+.primary-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hidden {
+  display: none !important;
 }
 
 footer {

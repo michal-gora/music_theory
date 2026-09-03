@@ -13,6 +13,7 @@
       <a href="index.html" class="active">Home</a>
       <a href="scales.html">Scales</a>
       <a href="chords.html">Chord Inversions</a>
+      <a href="quiz.html">Quiz</a>
     </nav>
   </header>
 
@@ -25,15 +26,20 @@
         GitHub Pages.
       </p>
       <ul>
-        <li><a href="scales.html">Scales</a> — pick a root note and major/minor, see the scale highlighted across one octave.</li>
+        <li><a href="scales.html">Scales</a> — pick a root note and major/minor, see the scale highlighted across the keyboard.</li>
         <li><a href="chords.html">Chord Inversions</a> — pick a root note, major/minor, and root/1st/2nd inversion, see the triad voiced and the root note marked.</li>
+        <li><a href="quiz.html">Quiz</a> — a mystery scale or chord is highlighted with no labels; guess the root, mode, and (for chords) inversion, and track your score across difficulty presets.</li>
       </ul>
       <p>
         The keyboard itself is a reusable component (<code>keyboard.js</code>):
         it just draws an SVG piano for a given MIDI range and lets any page
         highlight whole keys or drop a circle marker on top of specific keys.
         The music-theory logic (<code>music-theory.js</code>) is fully separate
-        and DOM-free, so it can be reused or unit-tested on its own.
+        and DOM-free, so it can be reused or unit-tested on its own. Even the
+        button rows (<code>key-selector.js</code>, <code>mode-selector.js</code>,
+        <code>inversion-selector.js</code>, <code>quiz-type-toggle.js</code>,
+        <code>difficulty-selector.js</code>) all share one generic
+        <code>button-group.js</code> implementation underneath.
       </p>
     </div>
   </main>
