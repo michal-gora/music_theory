@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Music Theory Trainer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>🎹 Music Theory Trainer</h1>
+    <nav class="site-nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="scales.html">Scales</a>
+      <a href="chords.html">Chord Inversions</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="panel">
+      <p>
+        A small, static toolkit for practicing scales and chord inversions on a
+        virtual keyboard. Everything runs client-side with plain JavaScript
+        (ES modules) — no build step, no server, so it works directly on
+        GitHub Pages.
+      </p>
+      <ul>
+        <li><a href="scales.html">Scales</a> — pick a root note and major/minor, see the scale highlighted across one octave.</li>
+        <li><a href="chords.html">Chord Inversions</a> — pick a root note, major/minor, and root/1st/2nd inversion, see the triad voiced and the root note marked.</li>
+      </ul>
+      <p>
+        The keyboard itself is a reusable component (<code>keyboard.js</code>):
+        it just draws an SVG piano for a given MIDI range and lets any page
+        highlight whole keys or drop a circle marker on top of specific keys.
+        The music-theory logic (<code>music-theory.js</code>) is fully separate
+        and DOM-free, so it can be reused or unit-tested on its own.
+      </p>
+    </div>
+  </main>
+
+  <footer>Built with vanilla JS ES modules. No frameworks, no build step.</footer>
+</body>
+</html>

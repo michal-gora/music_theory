@@ -1,0 +1,218 @@
+:root {
+  --bg: #1b1c22;
+  --panel: #262832;
+  --text: #eceef2;
+  --muted: #9aa0ac;
+  --accent: #5ec6ff;
+  --accent-2: #ff9f5a;
+  --white-key: #f7f7f5;
+  --white-key-stroke: #2a2a2a;
+  --black-key: #1c1c1c;
+  --highlight: #ff7700;
+  --highlight-secondary: #ff7700;
+  --marker-root: #0055ff;
+  --marker-default: #ffd166;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 24px;
+}
+
+header.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+header.site-header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+nav.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 16px;
+  font-weight: 600;
+}
+
+nav.site-nav a.active,
+nav.site-nav a:hover {
+  color: var(--accent);
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.panel {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.controls-group {
+  flex: 1 1 220px;
+}
+
+.controls-group h3 {
+  margin: 0 0 8px 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.key-selector,
+.mode-selector,
+.inversion-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.key-btn,
+.mode-btn,
+.inversion-btn {
+  background: #33353f;
+  color: var(--text);
+  border: 1px solid #3f414c;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.key-btn:hover,
+.mode-btn:hover,
+.inversion-btn:hover {
+  border-color: var(--accent);
+}
+
+.key-btn.active,
+.mode-btn.active,
+.inversion-btn.active {
+  background: var(--accent);
+  color: #10131a;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* --- Octave transpose control --- */
+
+.octave-transpose {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.octave-btn {
+  background: #33353f;
+  color: var(--text);
+  border: 1px solid #3f414c;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.octave-btn:hover:not(:disabled) {
+  border-color: var(--accent-2);
+}
+
+.octave-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.octave-label {
+  min-width: 76px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--accent-2);
+}
+
+#current-selection {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin-bottom: 16px;
+}
+
+.keyboard-scroll {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+/* --- Keyboard rendering --- */
+
+.piano-keyboard {
+  display: block;
+}
+
+.key {
+  stroke: var(--white-key-stroke);
+  stroke-width: 1;
+}
+
+.key-white {
+  fill: var(--white-key);
+}
+
+.key-black {
+  fill: var(--black-key);
+}
+
+/* Style 1: whole-key-body highlight */
+.key-white.key-highlighted {
+  fill: var(--highlight);
+}
+
+.key-black.key-highlighted {
+  fill: var(--highlight-secondary);
+}
+
+.key-white.key-highlighted-secondary {
+  fill: var(--highlight-secondary);
+}
+
+/* Style 2: circle marker on top of a key */
+.key-marker {
+  stroke: #10131a;
+  stroke-width: 1.5;
+}
+
+.marker-default {
+  fill: var(--marker-default);
+}
+
+.marker-root {
+  fill: var(--marker-root);
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 32px;
+}
