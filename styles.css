@@ -53,7 +53,7 @@ nav.site-nav a:hover {
 }
 
 main {
-  max-width: 960px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
@@ -67,16 +67,25 @@ main {
 .controls-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 20px 28px;
   margin-bottom: 20px;
 }
 
+/* Last control row in a panel doesn't need trailing space before the
+   panel's own bottom padding kicks in. */
+.controls-row:last-child {
+  margin-bottom: 0;
+}
+
 .controls-group {
-  flex: 1 1 220px;
+  flex: 0 1 auto;
+  min-width: 150px;
 }
 
 .controls-group-wide {
-  flex: 2 1 320px;
+  flex: 0 1 auto;
+  min-width: 260px;
 }
 
 .controls-group h3 {
@@ -87,16 +96,31 @@ main {
   color: var(--muted);
 }
 
-/* All "pick one of N" button rows share the same layout and button
-   look, whether they're picking a key, a mode, an inversion, a quiz
-   type, or a difficulty preset. */
-.key-selector,
+/* Mode / quiz-type / difficulty rows: few items, so a wrapping flex
+   row is fine - they rarely need more than one line. */
 .mode-selector,
-.inversion-selector,
 .quiz-type-toggle,
 .difficulty-selector {
   display: flex;
   flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Key selector: always 12 buttons. A fixed 6-column grid guarantees
+   two clean rows of equal-width buttons, instead of flex-wrap
+   breaking lines wherever the accumulated widths happen to overflow. */
+.key-selector {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+/* Inversion selector: always 3 buttons with uneven label lengths
+   ("Root Position" vs "1st Inversion"). A fixed 3-column grid forces
+   them to the same width and keeps them on one row. */
+.inversion-selector {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -112,6 +136,7 @@ main {
   padding: 8px 12px;
   cursor: pointer;
   font-size: 0.9rem;
+  text-align: center;
   transition: background 0.15s, border-color 0.15s;
 }
 
