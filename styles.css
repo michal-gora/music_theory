@@ -198,6 +198,7 @@ main {
   width: 100%;
   height: auto;
   max-width: 100%;
+  cursor: pointer;
 }
 
 .key {
@@ -240,6 +241,74 @@ main {
 
 .marker-root {
   fill: var(--marker-root);
+}
+
+/* --- Home page --- */
+
+.hero-panel {
+  text-align: center;
+  padding: 36px 20px;
+}
+
+.hero-title {
+  margin: 0 0 10px 0;
+  font-size: 1.6rem;
+  color: var(--accent-2);
+}
+
+.hero-subtitle {
+  margin: 0 auto;
+  max-width: 640px;
+  color: var(--muted);
+}
+
+.section-label {
+  margin: 0 0 8px 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.note-info {
+  flex: 1 1 auto;
+  font-weight: 700;
+  color: var(--accent-2);
+}
+
+.page-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.page-link-card {
+  display: block;
+  background: #33353f;
+  border: 1px solid #3f414c;
+  border-radius: 10px;
+  padding: 16px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.page-link-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.page-link-card h3 {
+  margin: 0 0 6px 0;
+  color: var(--accent-2);
+  font-size: 1rem;
+}
+
+.page-link-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
 /* --- Quiz page --- */

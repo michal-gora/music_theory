@@ -12,38 +12,53 @@
     <nav class="site-nav">
       <a href="index.html" class="active">Home</a>
       <a href="scales.html">Scales</a>
-      <a href="chords.html">Chord Inversions</a>
+      <a href="chords.html">Chords</a>
       <a href="quiz.html">Quiz</a>
     </nav>
   </header>
 
   <main>
+    <div class="panel hero-panel">
+      <h2 class="hero-title">Practice scales, chord inversions, and ear-to-eye recognition</h2>
+      <p class="hero-subtitle">
+        A small, static toolkit built entirely with vanilla JavaScript ES modules —
+        no build step, no server, works directly on GitHub Pages.
+      </p>
+    </div>
+
     <div class="panel">
-      <p>
-        A small, static toolkit for practicing scales and chord inversions on a
-        virtual keyboard. Everything runs client-side with plain JavaScript
-        (ES modules) — no build step, no server, so it works directly on
-        GitHub Pages.
-      </p>
-      <ul>
-        <li><a href="scales.html">Scales</a> — pick a root note and major/minor, see the scale highlighted across the keyboard.</li>
-        <li><a href="chords.html">Chord Inversions</a> — pick a root note, major/minor, and root/1st/2nd inversion, see the triad voiced and the root note marked.</li>
-        <li><a href="quiz.html">Quiz</a> — a mystery scale or chord is highlighted with no labels; guess the root, mode, and (for chords) inversion, and track your score across difficulty presets.</li>
-      </ul>
-      <p>
-        The keyboard itself is a reusable component (<code>keyboard.js</code>):
-        it just draws an SVG piano for a given MIDI range and lets any page
-        highlight whole keys or drop a circle marker on top of specific keys.
-        The music-theory logic (<code>music-theory.js</code>) is fully separate
-        and DOM-free, so it can be reused or unit-tested on its own. Even the
-        button rows (<code>key-selector.js</code>, <code>mode-selector.js</code>,
-        <code>inversion-selector.js</code>, <code>quiz-type-toggle.js</code>,
-        <code>difficulty-selector.js</code>) all share one generic
-        <code>button-group.js</code> implementation underneath.
-      </p>
+      <h3 class="section-label">Try It</h3>
+      <p class="quiz-instructions">Click any key below to identify it and toggle its highlight. This is the same keyboard component every other page uses — here it's just free-play.</p>
+      <div class="keyboard-scroll">
+        <div id="keyboard-container"></div>
+      </div>
+      <div class="controls-row" style="align-items: center; margin-top: 14px; margin-bottom: 0;">
+        <div id="note-info" class="note-info"></div>
+        <button type="button" id="clear-btn" class="secondary-btn">Clear</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3 class="section-label">Where To Go Next</h3>
+      <div class="page-links">
+        <a class="page-link-card" href="scales.html">
+          <h3>Scales</h3>
+          <p>Pick a root note and major/minor, see the scale highlighted across the whole keyboard, root marked in the center.</p>
+        </a>
+        <a class="page-link-card" href="chords.html">
+          <h3>Chord Inversions</h3>
+          <p>Pick a root note, major/minor, and root/1st/2nd inversion, see the triad voiced and the root marked wherever it lands.</p>
+        </a>
+        <a class="page-link-card" href="quiz.html">
+          <h3>Quiz</h3>
+          <p>A mystery scale or chord is highlighted with no labels — guess what it is, get instant feedback, and track your score.</p>
+        </a>
+      </div>
     </div>
   </main>
 
   <footer>Built with vanilla JS ES modules. No frameworks, no build step.</footer>
+
+  <script type="module" src="home-page.js"></script>
 </body>
 </html>
