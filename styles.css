@@ -166,13 +166,27 @@ main {
 
 /* --- Keyboard rendering --- */
 
+/* The SVG's viewBox defines its internal proportions; here we make it
+   scale responsively to fill its container's width instead of staying
+   at a fixed pixel size. Since it's a vector graphic, this stays sharp
+   at any size and avoids the keyboard overflowing into a scrollbar on
+   normal desktop widths. .keyboard-scroll's overflow-x: auto remains
+   as a fallback only for very narrow (e.g. mobile) viewports.
+   Note: deliberately no shape-rendering: crispEdges here - that
+   disables anti-aliasing and looks jagged once the SVG is scaled to a
+   non-1:1 size, which is the normal case for a responsive element.
+   Default anti-aliased rendering scales smoothly at any size. */
 .piano-keyboard {
   display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
 }
 
 .key {
   stroke: var(--white-key-stroke);
   stroke-width: 1;
+  vector-effect: non-scaling-stroke;
 }
 
 .key-white {
@@ -200,6 +214,7 @@ main {
 .key-marker {
   stroke: #10131a;
   stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
 }
 
 .marker-default {

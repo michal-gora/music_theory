@@ -27,16 +27,7 @@ import {
   NOTE_NAMES_SHARP,
 } from './music-theory.js';
 
-// Base (transpose offset = 0) chord root octave: C3. Combined with the
-// -1..+1 transpose range, the chord's base octave ranges from C2 to C4,
-// which keeps every root note's every inversion within the shared
-// keyboard window defined in keyboard-config.js (C2-C7):
-//   offset -1 (octave 2): notes span MIDI 36-63
-//   offset  0 (octave 3): notes span MIDI 48-75
-//   offset +1 (octave 4): notes span MIDI 60-87
-const BASE_CHORD_OCTAVE = 3;
-const TRANSPOSE_MIN = -1;
-const TRANSPOSE_MAX = 1;
+const BASE_CHORD_OCTAVE = 4;
 
 let octaveOffset = 0;
 
@@ -77,8 +68,6 @@ const inversionSelector = createInversionSelector(document.getElementById('inver
   onChange: update,
 });
 const octaveTranspose = createOctaveTranspose(document.getElementById('octave-transpose-container'), {
-  min: TRANSPOSE_MIN,
-  max: TRANSPOSE_MAX,
   onChange: (offset) => {
     octaveOffset = offset;
     update();

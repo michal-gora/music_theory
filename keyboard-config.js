@@ -11,7 +11,7 @@
  * convenience default, not a hard requirement.
  */
 
-export const KEYBOARD_START_MIDI = 36; // C2
+export const KEYBOARD_START_MIDI = 48; // C2
 export const KEYBOARD_END_MIDI = 96;   // C7
 export const KEYBOARD_WHITE_KEY_WIDTH = 26;
 

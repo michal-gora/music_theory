@@ -23,7 +23,10 @@ export class PianoKeyboard {
    * @param {object} options
    * @param {number} options.startMidi first MIDI note shown (inclusive)
    * @param {number} options.endMidi last MIDI note shown (inclusive)
-   * @param {number} options.whiteKeyWidth px
+   * @param {number} options.whiteKeyWidth px (used for the SVG's internal
+   *   viewBox/aspect ratio; the element is displayed responsively via CSS,
+   *   so this mainly controls the keyboard's proportions, not its final
+   *   on-screen pixel size)
    * @param {number} options.whiteKeyHeight px
    * @param {number} options.blackKeyHeight px
    */
@@ -64,9 +67,16 @@ export class PianoKeyboard {
     const svgHeight = this.whiteKeyHeight;
 
     const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('width', svgWidth);
-    svg.setAttribute('height', svgHeight);
+    // Intrinsic size (defines the aspect ratio via viewBox); actual
+    // on-screen size is controlled by CSS (width: 100%, height: auto)
+    // so the keyboard scales to fit its container instead of overflowing.
+    // Deliberately NOT using shape-rendering: crispEdges here - it
+    // disables anti-aliasing, which only looks good at exact 1:1 pixel
+    // scale. Since this SVG is scaled responsively (almost never 1:1),
+    // crispEdges made lines look jagged/stair-stepped instead of smooth.
+    // Default anti-aliased rendering scales cleanly at any size.
     svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     svg.classList.add('piano-keyboard');
 
     const whiteX = new Map();
@@ -79,7 +89,7 @@ export class PianoKeyboard {
       rect.setAttribute('x', x);
       rect.setAttribute('y', 0);
       rect.setAttribute('width', this.whiteKeyWidth);
-      rect.setAttribute('height', this.whiteKeyHeight);
+      rect.setAttribute('height', svgHeight);
       rect.setAttribute('rx', 2);
       rect.classList.add('key', 'key-white');
       rect.dataset.midi = String(m);

@@ -29,8 +29,6 @@ import {
 } from './music-theory.js';
 
 const CENTER_MIDI = (KEYBOARD_START_MIDI + KEYBOARD_END_MIDI) / 2;
-const TRANSPOSE_MIN = -2;
-const TRANSPOSE_MAX = 2;
 
 let octaveOffset = 0;
 
@@ -73,8 +71,6 @@ const modeSelector = createModeSelector(document.getElementById('mode-selector-c
   onChange: update,
 });
 const octaveTranspose = createOctaveTranspose(document.getElementById('octave-transpose-container'), {
-  min: TRANSPOSE_MIN,
-  max: TRANSPOSE_MAX,
   onChange: (offset) => {
     octaveOffset = offset;
     update();
