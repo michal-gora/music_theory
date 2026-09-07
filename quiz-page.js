@@ -40,6 +40,7 @@ import {
   getQuestionDisplayNotes,
   formatQuestionLabel,
 } from './quiz-engine.js';
+import { NOTE_NAMES_SHARP } from './music-theory.js';
 
 let octaveSpan = DEFAULT_OCTAVE_SPAN;
 
@@ -57,6 +58,64 @@ let quizType; // set below, right after the toggle is created
 let preset = COURSE_PRESETS[0];
 let currentQuestion = null;
 let answered = false;
+
+const CUSTOM_PRESET = {
+  id: 'custom',
+  shortLabel: 'Custom',
+  label: 'Custom selection',
+  roots: [...COURSE_PRESETS[0].roots],
+  modes: [...COURSE_PRESETS[0].modes],
+  inversions: [...COURSE_PRESETS[0].inversions],
+};
+
+const COURSE_OPTIONS = [...COURSE_PRESETS, CUSTOM_PRESET];
+
+function arraysEqual(a, b) {
+  return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((value, idx) => value === b[idx]);
+}
+
+function normalizeConfig(config) {
+  const roots = [...new Set(config.roots ?? COURSE_PRESETS[0].roots)];
+  const modes = [...new Set(config.modes ?? COURSE_PRESETS[0].modes)];
+  const inversions = [...new Set(config.inversions ?? COURSE_PRESETS[0].inversions)];
+  return {
+    roots: roots.length ? roots.slice().sort((a, b) => a - b) : [...COURSE_PRESETS[0].roots],
+    modes: modes.length ? modes.slice().sort((a, b) => {
+      const order = { major: 0, minor: 1 };
+      return (order[a] ?? 99) - (order[b] ?? 99);
+    }) : [...COURSE_PRESETS[0].modes],
+    inversions: inversions.length ? inversions.slice().sort((a, b) => a - b) : [...COURSE_PRESETS[0].inversions],
+  };
+}
+
+function getNextToggleValues(selectedValues, value) {
+  const nextValues = selectedValues.includes(value)
+    ? selectedValues.filter((item) => item !== value)
+    : [...selectedValues, value];
+  return nextValues.length === 0 ? selectedValues : nextValues;
+}
+
+function getMatchingPresetForConfig(config) {
+  const normalized = normalizeConfig(config);
+  const exactMatch = COURSE_PRESETS.find((candidate) => {
+    return arraysEqual(candidate.roots, normalized.roots)
+      && arraysEqual(candidate.modes, normalized.modes)
+      && arraysEqual(candidate.inversions, normalized.inversions);
+  });
+  if (exactMatch) return exactMatch;
+  return {
+    ...CUSTOM_PRESET,
+    roots: [...normalized.roots],
+    modes: [...normalized.modes],
+    inversions: [...normalized.inversions],
+  };
+}
+
+let courseConfig = normalizeConfig({
+  roots: COURSE_PRESETS[0].roots,
+  modes: COURSE_PRESETS[0].modes,
+  inversions: COURSE_PRESETS[0].inversions,
+});
 
 function refreshInversionVisibility() {
   inversionGroupEl.classList.toggle('hidden', quizType !== 'chord');
@@ -99,11 +158,11 @@ function submitGuess() {
 
   if (isCorrect) {
     scoreTracker.recordCorrect();
-    feedbackEl.textContent = `Correct! It was the ${formatQuestionLabel(currentQuestion)}.`;
+    feedbackEl.textContent = `${formatQuestionLabel(currentQuestion)}`;
     feedbackEl.className = 'feedback-message feedback-correct';
   } else {
     scoreTracker.recordWrong();
-    feedbackEl.textContent = `Not quite — it was the ${formatQuestionLabel(currentQuestion)}.`;
+    feedbackEl.textContent = `${formatQuestionLabel(currentQuestion)}`;
     feedbackEl.className = 'feedback-message feedback-wrong';
   }
 
@@ -115,6 +174,90 @@ function submitGuess() {
 const keySelector = createKeySelector(document.getElementById('guess-key-container'));
 const modeSelector = createModeSelector(document.getElementById('guess-mode-container'));
 const inversionSelector = createInversionSelector(document.getElementById('guess-inversion-container'));
+
+function renderManualToggleSet(container, { values, labels, selectedValues, onToggle, buttonClassName }) {
+  container.innerHTML = '';
+  values.forEach((value, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `manual-toggle-btn ${buttonClassName}`;
+    button.textContent = labels[index];
+    const selected = selectedValues.includes(value);
+    button.classList.toggle('active', selected);
+    button.addEventListener('click', () => {
+      const nextValues = getNextToggleValues(selectedValues, value);
+      onToggle(nextValues);
+    });
+    container.appendChild(button);
+  });
+}
+
+function applyConfigToManualControls() {
+  renderManualToggleSet(document.getElementById('manual-key-container'), {
+    values: Array.from({ length: NOTE_NAMES_SHARP.length }, (_, i) => i),
+    labels: NOTE_NAMES_SHARP,
+    selectedValues: courseConfig.roots,
+    onToggle: (nextValues) => {
+      courseConfig = normalizeConfig({
+        roots: nextValues,
+        modes: courseConfig.modes,
+        inversions: courseConfig.inversions,
+      });
+      preset = getMatchingPresetForConfig(courseConfig);
+      difficultySelector.setSelected(preset);
+      applyConfigToManualControls();
+      showQuestion();
+    },
+    buttonClassName: 'manual-key-btn',
+  });
+
+  renderManualToggleSet(document.getElementById('manual-mode-container'), {
+    values: ['major', 'minor'],
+    labels: ['Major', 'Minor'],
+    selectedValues: courseConfig.modes,
+    onToggle: (nextValues) => {
+      courseConfig = normalizeConfig({
+        roots: courseConfig.roots,
+        modes: nextValues,
+        inversions: courseConfig.inversions,
+      });
+      preset = getMatchingPresetForConfig(courseConfig);
+      difficultySelector.setSelected(preset);
+      applyConfigToManualControls();
+      showQuestion();
+    },
+    buttonClassName: 'manual-mode-btn',
+  });
+
+  renderManualToggleSet(document.getElementById('manual-inversion-container'), {
+    values: [0, 1, 2],
+    labels: ['Root', '1st', '2nd'],
+    selectedValues: courseConfig.inversions,
+    onToggle: (nextValues) => {
+      courseConfig = normalizeConfig({
+        roots: courseConfig.roots,
+        modes: courseConfig.modes,
+        inversions: nextValues,
+      });
+      preset = getMatchingPresetForConfig(courseConfig);
+      difficultySelector.setSelected(preset);
+      applyConfigToManualControls();
+      showQuestion();
+    },
+    buttonClassName: 'manual-inversion-btn',
+  });
+}
+
+function applyPresetToManualConfig(nextPreset) {
+  const nextConfig = normalizeConfig({
+    roots: nextPreset.roots,
+    modes: nextPreset.modes,
+    inversions: nextPreset.inversions,
+  });
+  courseConfig = nextConfig;
+  preset = nextPreset;
+  applyConfigToManualControls();
+}
 
 const quizTypeToggle = createQuizTypeToggle(document.getElementById('quiz-type-container'), {
   onChange: (type) => {
@@ -128,13 +271,25 @@ const quizTypeToggle = createQuizTypeToggle(document.getElementById('quiz-type-c
 // active on load (index 0 of its items) is what quizType starts as.
 quizType = quizTypeToggle.getSelected();
 
-createDifficultySelector(document.getElementById('difficulty-container'), {
-  presets: COURSE_PRESETS,
+const difficultySelector = createDifficultySelector(document.getElementById('difficulty-container'), {
+  presets: COURSE_OPTIONS,
   onChange: (selectedPreset) => {
-    preset = selectedPreset;
+    if (selectedPreset && selectedPreset.id === 'custom') {
+      preset = getMatchingPresetForConfig(courseConfig);
+    } else {
+      preset = selectedPreset;
+      courseConfig = normalizeConfig({
+        roots: preset.roots,
+        modes: preset.modes,
+        inversions: preset.inversions,
+      });
+    }
+    applyConfigToManualControls();
     showQuestion();
   },
 });
+
+applyPresetToManualConfig(preset);
 
 createRangeControl(document.getElementById('range-control-container'), {
   min: MIN_OCTAVE_SPAN,

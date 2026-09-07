@@ -5,7 +5,7 @@
   --muted: #9aa0ac;
   --accent: #5ec6ff;
   --accent-2: #ff9f5a;
-  --good: #4caf82;
+  --good: #6ef59f;
   --bad: #ff5a5f;
   --white-key: #f7f7f5;
   --white-key-stroke: #2a2a2a;
@@ -146,6 +146,55 @@ main {
   background: #2d313c;
   color: var(--text);
   padding: 8px 10px;
+}
+
+.manual-config {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.manual-config-group {
+  min-width: 180px;
+  flex: 1 1 180px;
+}
+
+.manual-config-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+#manual-key-container,
+#manual-mode-container,
+#manual-inversion-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.manual-toggle-btn {
+  background: #33353f;
+  color: var(--text);
+  border: 1px solid #3f414c;
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.manual-toggle-btn:hover {
+  border-color: var(--accent);
+}
+
+.manual-toggle-btn.active {
+  background: rgba(94, 198, 255, 0.18);
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
 }
 
 /* Key selector: always 12 buttons. A fixed 6-column grid guarantees
@@ -406,23 +455,33 @@ main {
 
 .feedback-message {
   margin-top: 16px;
-  padding: 12px 14px;
+  padding: 10px 14px;
   border-radius: 8px;
   background: #33353f;
   color: var(--text);
-  min-height: 1.2em;
+  min-height: 2.7em;
+  max-height: 2.7em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .feedback-message.feedback-correct {
-  background: rgba(76, 175, 130, 0.15);
-  color: var(--good);
+  background: rgba(0, 193, 71, 0.96);
+  color: #ffffff;
   font-weight: 700;
+  border: 1px solid rgba(120, 255, 171, 0.9);
 }
 
 .feedback-message.feedback-wrong {
-  background: rgba(255, 90, 95, 0.15);
-  color: var(--bad);
+  background: rgba(224, 0, 0, 0.749);
+  color: #ffd4d4;
   font-weight: 700;
+  border: 1px solid rgba(255, 114, 114, 0.8);
 }
 
 .quiz-actions {

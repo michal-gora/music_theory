@@ -152,11 +152,11 @@ export function getQuestionDisplayNotes(question, startMidi, endMidi) {
 
 /**
  * Human-readable label for a question/guess, e.g. "C# Minor scale" or
- * "Eb Major triad — 2nd Inversion".
+ * "Eb Major — 2nd Inversion".
  */
 export function formatQuestionLabel(question) {
   const modeLabel = MODE_LABELS[question.mode] ?? question.mode;
   const rootLabel = NOTE_NAMES_SHARP[question.rootPc];
   if (question.type === 'scale') return `${rootLabel} ${modeLabel} scale`;
-  return `${rootLabel} ${modeLabel} triad — ${INVERSION_LABELS[question.inversion]}`;
+  return `${rootLabel} ${modeLabel} (${INVERSION_LABELS[question.inversion]})`;
 }
