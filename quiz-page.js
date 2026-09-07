@@ -34,7 +34,7 @@ import {
   MAX_OCTAVE_SPAN,
 } from './keyboard-config.js';
 import {
-  DIFFICULTY_PRESETS,
+  COURSE_PRESETS,
   generateQuestion,
   checkAnswer,
   getQuestionDisplayNotes,
@@ -54,7 +54,7 @@ const actionBtn = document.getElementById('action-btn');
 const feedbackEl = document.getElementById('feedback-message');
 
 let quizType; // set below, right after the toggle is created
-let preset = DIFFICULTY_PRESETS[0];
+let preset = COURSE_PRESETS[0];
 let currentQuestion = null;
 let answered = false;
 
@@ -129,7 +129,7 @@ const quizTypeToggle = createQuizTypeToggle(document.getElementById('quiz-type-c
 quizType = quizTypeToggle.getSelected();
 
 createDifficultySelector(document.getElementById('difficulty-container'), {
-  presets: DIFFICULTY_PRESETS,
+  presets: COURSE_PRESETS,
   onChange: (selectedPreset) => {
     preset = selectedPreset;
     showQuestion();

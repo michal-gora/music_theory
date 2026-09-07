@@ -99,11 +99,53 @@ main {
 /* Mode / quiz-type / difficulty rows: few items, so a wrapping flex
    row is fine - they rarely need more than one line. */
 .mode-selector,
-.quiz-type-toggle,
-.difficulty-selector {
+.quiz-type-toggle {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.difficulty-selector {
+  width: min(100%, 320px);
+}
+
+.course-select {
+  width: 100%;
+  appearance: none;
+  background: linear-gradient(180deg, #2d313c 0%, #232833 100%);
+  color: var(--text);
+  border: 1px solid #4e586a;
+  border-radius: 10px;
+  padding: 10px 42px 10px 12px;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.3;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--accent) 50%),
+    linear-gradient(135deg, var(--accent) 50%, transparent 50%),
+    linear-gradient(to right, transparent, transparent);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px),
+    100% 0;
+  background-size: 6px 6px, 6px 6px, 2.5em 2.5em;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.course-select:hover,
+.course-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(94, 198, 255, 0.15);
+  outline: none;
+}
+
+.course-select option {
+  background: #2d313c;
+  color: var(--text);
+  padding: 8px 10px;
 }
 
 /* Key selector: always 12 buttons. A fixed 6-column grid guarantees

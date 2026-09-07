@@ -27,42 +27,66 @@ const CHORD_BASE_OCTAVE = 3;
 export const INVERSION_LABELS = ['Root Position', '1st Inversion', '2nd Inversion'];
 
 /**
- * Difficulty/scope presets. Each restricts which roots, modes, and (for
- * chord questions) inversions can be drawn when generating a question.
- * Add more presets here without touching any UI code.
+ * Course presets. Each restricts which roots, modes, and (for chord
+ * questions) inversions can be drawn when generating a question.
+ * These are static course definitions the learner can pick.
  */
-export const DIFFICULTY_PRESETS = [
+export const COURSE_PRESETS = [
   {
-    id: 'beginner',
-    shortLabel: 'Beginner',
-    label: 'Beginner — natural keys only, major only, root position only',
-    roots: NATURAL_PITCH_CLASSES,
-    modes: ['major'],
+    id: 'root-positions-only',
+    shortLabel: 'Root positions only',
+    label: 'Root positions only — major & minor triads in root position',
+    roots: ALL_PITCH_CLASSES,
+    modes: ['major', 'minor'],
     inversions: [0],
   },
   {
-    id: 'easy',
-    shortLabel: 'Easy',
-    label: 'Easy — natural keys only, major & minor, root/1st inversion',
-    roots: NATURAL_PITCH_CLASSES,
+    id: 'first-inversions-only',
+    shortLabel: '1st inversions only',
+    label: '1st inversions only — major & minor triads in first inversion',
+    roots: ALL_PITCH_CLASSES,
     modes: ['major', 'minor'],
-    inversions: [0, 1],
+    inversions: [1],
   },
   {
-    id: 'intermediate',
-    shortLabel: 'Intermediate',
-    label: 'Intermediate — all 12 keys, major & minor, root/1st inversion',
+    id: 'second-inversions-only',
+    shortLabel: '2nd inversions only',
+    label: '2nd inversions only — major & minor triads in second inversion',
+    roots: ALL_PITCH_CLASSES,
+    modes: ['major', 'minor'],
+    inversions: [2],
+  },
+  {
+    id: 'root-and-first-inversions',
+    shortLabel: 'Root + 1st inversions',
+    label: 'Root + 1st inversions — major & minor triads with the first two voicings',
     roots: ALL_PITCH_CLASSES,
     modes: ['major', 'minor'],
     inversions: [0, 1],
   },
   {
-    id: 'advanced',
-    shortLabel: 'Advanced',
-    label: 'Advanced — all 12 keys, major & minor, all inversions',
+    id: 'all-inversions',
+    shortLabel: 'All inversions',
+    label: 'All inversions — major & minor triads in every inversion',
     roots: ALL_PITCH_CLASSES,
     modes: ['major', 'minor'],
     inversions: [0, 1, 2],
+  },
+  {
+    id: 'only-white',
+    shortLabel: 'Only white keys',
+    label: 'Only white keys — all notes of the triad are white keys',
+    roots: NATURAL_PITCH_CLASSES,
+    modes: ['major', 'minor'],
+    inversions: [0, 1, 2],
+  },
+  {
+    id: 'center-black',
+    shortLabel: 'Center black',
+    label: 'Center black — root-position major triads with a black-key third',
+    roots: [2, 4, 6, 9, 11],
+    modes: ['major'],
+    inversions: [0],
   },
 ];
 
@@ -89,8 +113,8 @@ export function generateQuestion(quizType, preset, previousQuestion = null) {
   let question;
   let attempts = 0;
   do {
-    const rootPc = pickRandom(preset.roots);
-    const mode = pickRandom(preset.modes);
+    const rootPc = pickRandom(preset.roots ?? ALL_PITCH_CLASSES);
+    const mode = pickRandom(preset.modes ?? ['major', 'minor']);
     question = quizType === 'chord'
       ? { type: 'chord', rootPc, mode, inversion: pickRandom(preset.inversions ?? [0]) }
       : { type: 'scale', rootPc, mode };
