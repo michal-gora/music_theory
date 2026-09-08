@@ -55,7 +55,8 @@ const actionBtn = document.getElementById('action-btn');
 const feedbackEl = document.getElementById('feedback-message');
 
 let quizType; // set below, right after the toggle is created
-let preset = COURSE_PRESETS[0];
+let selectedPreset = COURSE_PRESETS[0];
+let preset = selectedPreset;
 let currentQuestion = null;
 let answered = false;
 
@@ -63,9 +64,9 @@ const CUSTOM_PRESET = {
   id: 'custom',
   shortLabel: 'Custom',
   label: 'Custom selection',
-  roots: [...COURSE_PRESETS[0].roots],
-  modes: [...COURSE_PRESETS[0].modes],
-  inversions: [...COURSE_PRESETS[0].inversions],
+  roots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  modes: ['major', 'minor'],
+  inversions: [0, 1, 2],
 };
 
 const COURSE_OPTIONS = [...COURSE_PRESETS, CUSTOM_PRESET];
@@ -112,10 +113,21 @@ function getMatchingPresetForConfig(config) {
 }
 
 let courseConfig = normalizeConfig({
-  roots: COURSE_PRESETS[0].roots,
-  modes: COURSE_PRESETS[0].modes,
-  inversions: COURSE_PRESETS[0].inversions,
+  roots: selectedPreset.roots,
+  modes: selectedPreset.modes,
+  inversions: selectedPreset.inversions,
 });
+
+function getEffectivePreset(basePreset, config) {
+  const normalized = normalizeConfig(config);
+  const resolvedPreset = basePreset ?? CUSTOM_PRESET;
+  return {
+    ...resolvedPreset,
+    roots: (resolvedPreset.roots ?? []).filter((root) => normalized.roots.includes(root)),
+    modes: (resolvedPreset.modes ?? []).filter((mode) => normalized.modes.includes(mode)),
+    inversions: (resolvedPreset.inversions ?? []).filter((inversion) => normalized.inversions.includes(inversion)),
+  };
+}
 
 function refreshInversionVisibility() {
   inversionGroupEl.classList.toggle('hidden', quizType !== 'chord');
@@ -203,8 +215,8 @@ function applyConfigToManualControls() {
         modes: courseConfig.modes,
         inversions: courseConfig.inversions,
       });
-      preset = getMatchingPresetForConfig(courseConfig);
-      difficultySelector.setSelected(preset);
+      preset = getEffectivePreset(selectedPreset, courseConfig);
+      difficultySelector.setSelected(selectedPreset);
       applyConfigToManualControls();
       showQuestion();
     },
@@ -221,8 +233,8 @@ function applyConfigToManualControls() {
         modes: nextValues,
         inversions: courseConfig.inversions,
       });
-      preset = getMatchingPresetForConfig(courseConfig);
-      difficultySelector.setSelected(preset);
+      preset = getEffectivePreset(selectedPreset, courseConfig);
+      difficultySelector.setSelected(selectedPreset);
       applyConfigToManualControls();
       showQuestion();
     },
@@ -239,8 +251,8 @@ function applyConfigToManualControls() {
         modes: courseConfig.modes,
         inversions: nextValues,
       });
-      preset = getMatchingPresetForConfig(courseConfig);
-      difficultySelector.setSelected(preset);
+      preset = getEffectivePreset(selectedPreset, courseConfig);
+      difficultySelector.setSelected(selectedPreset);
       applyConfigToManualControls();
       showQuestion();
     },
@@ -249,13 +261,14 @@ function applyConfigToManualControls() {
 }
 
 function applyPresetToManualConfig(nextPreset) {
+  selectedPreset = nextPreset;
   const nextConfig = normalizeConfig({
     roots: nextPreset.roots,
     modes: nextPreset.modes,
     inversions: nextPreset.inversions,
   });
   courseConfig = nextConfig;
-  preset = nextPreset;
+  preset = getEffectivePreset(selectedPreset, courseConfig);
   applyConfigToManualControls();
 }
 
@@ -273,23 +286,14 @@ quizType = quizTypeToggle.getSelected();
 
 const difficultySelector = createDifficultySelector(document.getElementById('difficulty-container'), {
   presets: COURSE_OPTIONS,
-  onChange: (selectedPreset) => {
-    if (selectedPreset && selectedPreset.id === 'custom') {
-      preset = getMatchingPresetForConfig(courseConfig);
-    } else {
-      preset = selectedPreset;
-      courseConfig = normalizeConfig({
-        roots: preset.roots,
-        modes: preset.modes,
-        inversions: preset.inversions,
-      });
-    }
-    applyConfigToManualControls();
+  onChange: (nextPreset) => {
+    const chosenPreset = nextPreset && nextPreset.id === 'custom' ? CUSTOM_PRESET : nextPreset;
+    applyPresetToManualConfig(chosenPreset);
     showQuestion();
   },
 });
 
-applyPresetToManualConfig(preset);
+applyPresetToManualConfig(selectedPreset);
 
 createRangeControl(document.getElementById('range-control-container'), {
   min: MIN_OCTAVE_SPAN,
