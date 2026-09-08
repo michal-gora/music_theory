@@ -96,6 +96,46 @@ function getNextToggleValues(selectedValues, value) {
   return nextValues.length === 0 ? selectedValues : nextValues;
 }
 
+function isConfigValidForPreset(basePreset, config) {
+  const effectivePreset = getEffectivePreset(basePreset, config);
+  if (effectivePreset.roots.length === 0 || effectivePreset.modes.length === 0) {
+    return false;
+  }
+  if (quizType === 'chord' && effectivePreset.inversions.length === 0) {
+    return false;
+  }
+
+  const rootCandidates = effectivePreset.roots ?? [];
+  const modeCandidates = effectivePreset.modes ?? [];
+  const inversionCandidates = effectivePreset.inversions ?? [0];
+
+  for (const rootPc of rootCandidates) {
+    for (const mode of modeCandidates) {
+      if (quizType === 'scale') {
+        if (typeof basePreset?.isAllowed !== 'function') {
+          return true;
+        }
+        if (basePreset.isAllowed({ type: 'scale', rootPc, mode })) {
+          return true;
+        }
+        continue;
+      }
+
+      for (const inversion of inversionCandidates) {
+        const candidate = { type: 'chord', rootPc, mode, inversion };
+        if (typeof basePreset?.isAllowed !== 'function') {
+          return true;
+        }
+        if (basePreset.isAllowed(candidate)) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 function getMatchingPresetForConfig(config) {
   const normalized = normalizeConfig(config);
   const exactMatch = COURSE_PRESETS.find((candidate) => {
@@ -210,11 +250,15 @@ function applyConfigToManualControls() {
     labels: NOTE_NAMES_SHARP,
     selectedValues: courseConfig.roots,
     onToggle: (nextValues) => {
-      courseConfig = normalizeConfig({
+      const candidateConfig = normalizeConfig({
         roots: nextValues,
         modes: courseConfig.modes,
         inversions: courseConfig.inversions,
       });
+      if (!isConfigValidForPreset(selectedPreset, candidateConfig)) {
+        return;
+      }
+      courseConfig = candidateConfig;
       preset = getEffectivePreset(selectedPreset, courseConfig);
       difficultySelector.setSelected(selectedPreset);
       applyConfigToManualControls();
@@ -228,11 +272,15 @@ function applyConfigToManualControls() {
     labels: ['Major', 'Minor'],
     selectedValues: courseConfig.modes,
     onToggle: (nextValues) => {
-      courseConfig = normalizeConfig({
+      const candidateConfig = normalizeConfig({
         roots: courseConfig.roots,
         modes: nextValues,
         inversions: courseConfig.inversions,
       });
+      if (!isConfigValidForPreset(selectedPreset, candidateConfig)) {
+        return;
+      }
+      courseConfig = candidateConfig;
       preset = getEffectivePreset(selectedPreset, courseConfig);
       difficultySelector.setSelected(selectedPreset);
       applyConfigToManualControls();
@@ -246,11 +294,15 @@ function applyConfigToManualControls() {
     labels: ['Root', '1st', '2nd'],
     selectedValues: courseConfig.inversions,
     onToggle: (nextValues) => {
-      courseConfig = normalizeConfig({
+      const candidateConfig = normalizeConfig({
         roots: courseConfig.roots,
         modes: courseConfig.modes,
         inversions: nextValues,
       });
+      if (!isConfigValidForPreset(selectedPreset, candidateConfig)) {
+        return;
+      }
+      courseConfig = candidateConfig;
       preset = getEffectivePreset(selectedPreset, courseConfig);
       difficultySelector.setSelected(selectedPreset);
       applyConfigToManualControls();

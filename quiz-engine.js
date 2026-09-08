@@ -37,12 +37,26 @@ export const COURSE_PRESETS = [
         id: 'white-key-chords',
         shortLabel: 'White-key chords',
         label: 'Major/minor triads whose notes stay on white keys',
-        roots: [0, 2, 4, 5, 7, 9, 11],
+        roots: [0, 2, 4, 5, 7, 9],
         modes: ['major', 'minor'],
         inversions: [0, 1, 2],
         isAllowed: ({ rootPc, mode, inversion }) => {
             const triad = triadPitchClasses(rootPc, mode);
             return triad.every((pitchClass) => NATURAL_PITCH_CLASSES.includes(pitchClass));
+        },
+    },
+    {
+        id: 'center-black',
+        shortLabel: 'Single black center',
+        label: 'Single black center — root and fifth are white, third is black',
+        roots: [0, 2, 4, 5, 7, 9],
+        modes: ['major', 'minor'],
+        inversions: [0, 1, 2],
+        isAllowed: ({ rootPc, mode }) => {
+            const [root, third, fifth] = triadPitchClasses(rootPc, mode);
+            return NATURAL_PITCH_CLASSES.includes(root)
+            && NATURAL_PITCH_CLASSES.includes(fifth)
+            && !NATURAL_PITCH_CLASSES.includes(third);
         },
     },
     {
@@ -60,24 +74,10 @@ export const COURSE_PRESETS = [
         },
     },
     {
-        id: 'center-black',
-        shortLabel: 'Single black center',
-        label: 'Single black center — root and fifth are white, third is black',
-        roots: [0, 2, 4, 5, 7, 9],
-        modes: ['major', 'minor'],
-        inversions: [0, 1, 2],
-        isAllowed: ({ rootPc, mode }) => {
-            const [root, third, fifth] = triadPitchClasses(rootPc, mode);
-            return NATURAL_PITCH_CLASSES.includes(root)
-                && NATURAL_PITCH_CLASSES.includes(fifth)
-                && !NATURAL_PITCH_CLASSES.includes(third);
-        },
-    },
-    {
         id: 'all-black',
         shortLabel: 'All-black chords',
         label: 'Major/minor triads whose notes stay on black keys',
-        roots: BLACK_PITCH_CLASSES,
+        roots: [3, 6],
         modes: ['major', 'minor'],
         inversions: [0, 1, 2],
         isAllowed: ({ rootPc, mode }) => {
